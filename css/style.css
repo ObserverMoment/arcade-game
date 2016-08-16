@@ -1,0 +1,14 @@
+body {
+    text-align: center;
+}
+#game-info {
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    font-size: 30px;
+    font-family: arial, helvetica, sans-serif;
+}
+.info {
+    margin: 0 10px;
+    padding: 0 10px;
+}
