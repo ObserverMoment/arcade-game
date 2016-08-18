@@ -12,3 +12,16 @@ body {
     margin: 0 10px;
     padding: 0 10px;
 }
+#instructions {
+    font-size: 18px;
+    color: blue;
+    font-family: arial, helvetica, sans-serif;
+}
+#scoring {
+    font-size: 16px;
+    color: green;
+    font-family: arial, helvetica, sans-serif;
+}
+.score-list {
+    list-style: none;
+}

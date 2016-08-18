@@ -1,6 +1,22 @@
-frontend-nanodegree-arcade-game
-===============================
+# Classic Arcade Game "Frogger" Clone
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+A basic game built using HTML5 and Javascript
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+## How to Load The game
+
+Download the git repository either from the command line or as a zip file from GitHub. Open up the index.html file in your favourite browser.
+
+## How to play the game
+
+* You control your character using the direction buttons on your keyboard. Move your character across the field and the road and make it to the water.
+* You should try and pick up the gems on your way! You get points for collecting these!
+* You have to avoid the bugs. If you hit one the you lose a life and will be sent back to your start point. Also, the bugs will eat the gems if you don't get them quick enough!
+* You get 10 lives to play with before your score is reset to zero
+* Every time you reach the water you move on to the next level. As the level progress the number of bugs increases!
+
+## How do I get points?
+
+* Reach the water: 50 points
+* Get a orange gem: 2 points
+* Get a blue gem: 4 points
+* Get a green gem: 6 points

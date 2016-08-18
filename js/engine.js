@@ -25,25 +25,26 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 505;
+    canvas.width = 1010;
     var canvasWidth = canvas.width;
-    canvas.height = 606;
+    canvas.height = 1100;
     var canvasHeight = canvas.height;
     doc.body.appendChild(canvas);
 
-    ctx.font = "30px Arial";
+    ctx.font = "60px Arial";
     ctx.fillStyle = "red";
     ctx.textAlign = "center";
-    ctx.fillText("Hello World", canvasWidth/2, canvasHeight/2);
 
     var allEnemies = [];
     var allGems = [];
-    var lives = 2;
+    // var allObstacles = [];
+    var lives = 10;
     var score = 0;
-    var level = 4;
-    document.getElementById("lives").innerHTML = "Lives: " + lives;
-    document.getElementById("score").innerHTML = "Score: " + score;
-    document.getElementById("level").innerHTML = "Level: " + level;
+    var level = 1;
+    document.getElementById("lives").innerHTML = "Lives: " + lives.toString();
+    document.getElementById("score").innerHTML = "Score: " + score.toString();
+    document.getElementById("level").innerHTML = "Level: " + level.toString();
+    document.getElementById("instructions").innerHTML = "Get the gems before the bugs eat them, avoid the bugs, reach the water, because you think you are a frog";
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -86,7 +87,6 @@ var Engine = (function(global) {
             allEnemies.push(new Enemy());
         }
 
-        // Place a new Gem in the Gems array
         allGems.push(new Gem());
 
         // Place the player object in a variable called player
@@ -107,7 +107,7 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         addGems();
-        removeGems();
+        // addObstacles();
         checkCollisions();
     }
 
@@ -131,21 +131,26 @@ var Engine = (function(global) {
         }
     }
 
-    function removeGems() {
-        if (Math.random() < 0.0005) {
-            allGems.splice(0, 1);
-        }
-    }
+    // function addObstacles() {
+    //     if (Math.random() < 0.001) {
+    //         allObstacles.push(new Obstacle());
+    //     }
+    // }
 
     function checkCollisions() {
         // check the postion of the player against enemies, gems and the finish line
-        // If collide with enemy. Draw some failure graphic. Return player to start position. Reduce var lives by one. If var lives < 0 - run some game over screen, showing score.
+        // If collide with enemy. Return player to start position. Reduce var lives by one. If var lives < 0 reset game completely.
         allEnemies.forEach(function(enemy) {
-            if (player.x > enemy.x && player.x < enemy.x + 60 && player.y > enemy.y && player.y < enemy.y + 60) {
-                if (lives <= 1) {
-                    ctx.fillText("Hello World", canvasWidth/2, canvasHeight/2);
-                    confirm("Play Again?");
-                    gameOverReset()
+            if (player.x > enemy.x - 70 && player.x < enemy.x + 70 && player.y > enemy.y - 80 && player.y < enemy.y + 10) {
+                if (lives <= 1) { // Reset the game to the beginning
+                    player.x = (canvasWidth/2) - 37;
+                    player.y = canvasHeight - 150;
+                    score = 0;
+                    lives = 10;
+                    level = 1;
+                    document.getElementById("lives").innerHTML = "Lives: " + lives.toString();
+                    document.getElementById("score").innerHTML = "Score: " + score.toString();
+                    document.getElementById("level").innerHTML = "Level: " + level.toString();
                 } else {
                     lives -= 1;
                     player.x = (canvasWidth/2) - 37;
@@ -153,27 +158,40 @@ var Engine = (function(global) {
                     document.getElementById("lives").innerHTML = "Lives: " + lives;
                 };
             }
+            // Check for enemy collision with Gems
+            for (var i = 0; i < allGems.length; i++) {
+                gem = allGems[i];
+                if (enemy.x + 90 > gem.x && enemy.x < gem.x + gem.width && enemy.y > gem.y && enemy.y < gem.y + gem.height) {
+                    allGems.splice(i, 1);
+                };
+            }
         });
 
-        // If collide with gem. Draw some success graphic. Increase var score by 2.
+        // If player collides with gem. Increase var score depending on which colour.
         for (var i = 0; i < allGems.length; i++) {
             gem = allGems[i];
             if (player.x + 44  > gem.x && player.x + 44 < gem.x + gem.width && player.y + 45 > gem.y && player.y + 45 < gem.y + gem.height) {
+                if (gem.colour == "orange") {
+                    score += 2
+                } else if (gem.colour == "blue") {
+                    score += 4
+                } else if (gem.colour == "green") {
+                    score += 6
+                };
                 allGems.splice(i, 1);
-                score += 2
                 document.getElementById("score").innerHTML = "Score: " + score;
             };
         }
 
-        // If collide with finish. Draw some success graphic. Return to start point. Increase var score by 10. Increase var level by 1.
+        // If collide with finish. Draw some success graphic. Return to start point. Increase var score by 50. Increase var level by 1.
         if (player.y < 50) {
-            player.x = 200;
-            player.y = 390;
-            score += 10;
+            player.x = player.initPosX;
+            player.y = player.initPosY;
+            score += 50;
             level += 1;
-            init();
-            document.getElementById("score").innerHTML = "Score: " + score;
-            document.getElementById("level").innerHTML = "Level: " + level;
+            document.getElementById("score").innerHTML = "Score: " + score.toString();
+            document.getElementById("level").innerHTML = "Level: " + level.toString();
+            init()
         };
     }
 
@@ -187,26 +205,31 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        var rowImages = [
-                'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
-            ],
 
-        var baseLayer = [
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ]
-            numRows = 6,
-            numCols = 5,
+        var numRows = 12,
+            numCols = 10,
             row, col;
+
+        var water = 'images/water-block.png',
+            stone = 'images/stone-block.png',
+            grass = 'images/grass-block.png';
+
+        // Added sprite map to render game background
+        var baseImage = [
+            [water, water, water, water, water, water, water, water, water, water],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [stone, stone, stone, stone, stone, stone, stone, stone, stone, stone],
+            [grass, grass, grass, grass, grass, grass, grass, grass, grass, grass],
+            [grass, grass, grass, grass, grass, grass, grass, grass, grass, grass],
+            [grass, grass, grass, grass, grass, grass, grass, grass, grass, grass],
+            [grass, grass, grass, grass, grass, grass, grass, grass, grass, grass],
+            [grass, grass, grass, grass, grass, grass, grass, grass, grass, grass]
+        ];
+
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
@@ -221,9 +244,11 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                // ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83); = old code
+                ctx.drawImage(Resources.get(baseImage[row][col]), col * 101, row * 83);
             }
         }
+
 
         renderEntities();
     }
@@ -233,7 +258,7 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
+        /* Loop through all of the objects within the various arrays and call
          * the render function you have defined.
          */
         allEnemies.forEach(function(enemy) {
@@ -242,6 +267,9 @@ var Engine = (function(global) {
         allGems.forEach(function(gem) {
             gem.render();
         });
+        // allObstacles.forEach(function(obstacle) {
+        //     obstacle.render();
+        // });
 
         player.render();
 
@@ -257,13 +285,6 @@ var Engine = (function(global) {
         allGems = [];
     }
 
-    function gameOverReset() {
-        // Reset enemies and gems arrays, plus all scores
-        score = 0;
-        lives = 5;
-        level = 1;
-    }
-
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
      * all of these images are properly loaded our game will start.
@@ -274,6 +295,8 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
+        'images/Gem-Blue.png',
+        'images/Gem-Green.png',
         'images/Gem-Orange.png',
         'images/Rock.png'
     ]);
